@@ -7,7 +7,8 @@ interface AudioPlayerProps {
 }
 
 export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying }) => {
-  const playerRef = useRef<any>(null);
+  // const playerRef = useRef<any>(null);
+  const playerRef = useRef<YT.Player | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying }) => {
     }
   }, [isPlaying, isReady]);
 
-  const onReady = (event: any) => {
+  const onReady = (event: { target: YT.Player }) => {
     try {
       playerRef.current = event.target;
       event.target.setVolume(MEDITATION_CONFIG.MUSIC_VOLUME);
@@ -35,7 +36,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying }) => {
     }
   };
 
-  const onError = (error: any) => {
+  const onError = (error: { target: YT.Player }) => {
     console.error('YouTube player error:', error);
   };
 
