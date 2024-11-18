@@ -1,26 +1,17 @@
 import { useState } from 'react';
 import { MeditationPlayer } from './components/MeditationPlayer';
-
-// Define the configuration types and defaults
-type Category = 'Personal Growth' | 'Financial' | 'Relationship' | 'Goal';
-
-interface MeditationConfig {
-  category: Category;
-  duration: number;
-}
-
-const defaultConfig: MeditationConfig = {
-  category: 'Personal Growth',
-  duration: 3,
-};
+import { CategorySelect } from './components/CategorySelect';
+import { MeditationConfig } from './types/categories';
 
 function App() {
-  const [config, setConfig] = useState<MeditationConfig>(defaultConfig);
+  const [config, setConfig] = useState<MeditationConfig>({
+    category: 'Relationship',
+  });
 
   const handleConfigChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = e.target;
-    setConfig(prev => ({
-      ...prev,
+    setConfig(prevConfig => ({
+      ...prevConfig,
       [name]: value
     }));
   };
@@ -34,27 +25,16 @@ function App() {
       <div className="bg-white/80 p-6 rounded-lg shadow-lg w-full max-w-md">
         <div className="space-y-4">
           <div className="flex gap-4">
-            <div className="w-2/3">
-              <label className="block text-gray-700 mb-2 text-xs">Category</label>
-              <select
-                name="category"
-                value={config.category}
-                onChange={handleConfigChange}
-                className="w-full p-2 border rounded-md"
-              >
-                <option value="Personal Growth">Personal Growth Affirmation</option>
-                <option value="Financial">Financial Affirmation</option>
-                <option value="Relationship">Relationship Affirmation</option>
-                <option value="Goal">Goal Affirmation</option>
-              </select>
-            </div>
-          
+            <CategorySelect
+              value={config.category}
+              onChange={handleConfigChange}
+            />
             <div className="w-1/3">
               <label className="block text-gray-700 mb-2 text-xs">Duration (minutes)</label>
               <input
                 type="number"
                 name="duration"
-                value={config.duration}
+                value={config.category}
                 onChange={handleConfigChange}
                 min="1"
                 className="w-full p-2 border rounded-md"
@@ -70,7 +50,7 @@ function App() {
       <br />
       <br />
       <br />
-      <MeditationPlayer />
+      <MeditationPlayer category={config.category} />
     </div>
   );
 }

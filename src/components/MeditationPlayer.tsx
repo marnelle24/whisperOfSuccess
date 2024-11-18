@@ -6,7 +6,11 @@ import { MEDITATION_CONFIG } from '../config/constants';
 import { useSpeech } from '../hooks/useSpeech';
 import { useAffirmations } from '../hooks/useAffirmations';
 
-export const MeditationPlayer: React.FC = () => {
+interface MeditationPlayerProps {
+  category: string;
+}
+
+export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(MEDITATION_CONFIG.DURATION);
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,7 +22,7 @@ export const MeditationPlayer: React.FC = () => {
     isLoading,
     error,
     refreshAffirmations
-  } = useAffirmations();
+  } = useAffirmations(category);
 
   const progress = ((MEDITATION_CONFIG.DURATION - timeLeft) / MEDITATION_CONFIG.DURATION) * 100;
 
