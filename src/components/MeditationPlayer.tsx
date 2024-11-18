@@ -8,8 +8,8 @@ import { useAffirmations } from '../hooks/useAffirmations';
 
 export const MeditationPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(MEDITATION_CONFIG.DURATION);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<number>(MEDITATION_CONFIG.DURATION);
+  // const [currentIndex, setCurrentIndex] = useState(0);
   const { speak, cancel } = useSpeech();
   const { 
     affirmations, 
@@ -38,7 +38,7 @@ export const MeditationPlayer: React.FC = () => {
       if (nextAffirmation) {
         setCurrentAffirmation(nextAffirmation);
         speak(nextAffirmation.text);
-        setCurrentIndex((prev) => (prev + 1) % affirmations.length);
+        // setCurrentIndex((prev) => (prev + 1) % affirmations.length);
       }
     }
 
@@ -56,7 +56,7 @@ export const MeditationPlayer: React.FC = () => {
     if (!isPlaying) {
       if (timeLeft === 0) {
         setTimeLeft(MEDITATION_CONFIG.DURATION);
-        setCurrentIndex(0);
+        // setCurrentIndex(0);
       }
       setIsPlaying(true);
     } else {
@@ -71,7 +71,7 @@ export const MeditationPlayer: React.FC = () => {
       cancel();
     }
     setTimeLeft(MEDITATION_CONFIG.DURATION);
-    setCurrentIndex(0);
+    // setCurrentIndex(0);
     await refreshAffirmations();
   };
 
