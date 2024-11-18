@@ -13,7 +13,6 @@ export const useAffirmations = (category: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      // const data = await fetchAffirmations();
       const data = await fetchAffirmations(category);
       setAffirmations(data);
       setCurrentAffirmation(data[0]);
