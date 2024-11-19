@@ -12,11 +12,6 @@ export const fetchAffirmations = async ({ selectedCategory, duration }: { select
       .eq('category', category)
       .limit(10);
     
-    // if (data && data.length < 10) {
-    //   const randomAffirmations = data.slice(0, 10 - data.length);
-    //   data.push(...randomAffirmations);
-    // }
-
     while (data && data.length < 10) {
       const randomIndex = Math.floor(Math.random() * AFFIRMATIONS_POOL.length);
       const randomAffirmation = AFFIRMATIONS_POOL[randomIndex];
@@ -34,8 +29,6 @@ export const fetchAffirmations = async ({ selectedCategory, duration }: { select
     if (!data || data.length === 0) {
       throw new Error('No affirmations found');
     }
-
-    // const timeInterval = Math.floor(duration / 10);
 
     console.log(data);
 

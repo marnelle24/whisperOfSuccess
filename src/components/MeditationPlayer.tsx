@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { FaPlay, FaPause, FaRedo } from 'react-icons/fa';
 import { AudioPlayer } from './AudioPlayer';
 import { CircularProgress } from './CircularProgress';
-// import { MEDITATION_CONFIG } from '../config/constants';
 import { useSpeech } from '../hooks/useSpeech';
 import { useAffirmations } from '../hooks/useAffirmations';
 import { Timer } from './Timer';
