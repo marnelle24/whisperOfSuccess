@@ -24,6 +24,19 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
     refreshAffirmations
   } = useAffirmations(category);
 
+  // Add this effect to handle category changes
+  useEffect(() => {
+    // Stop playing if active
+    if (isPlaying) {
+      setIsPlaying(false);
+      cancel();
+    }
+    // Reset timer
+    setTimeLeft(MEDITATION_CONFIG.DURATION);
+    // Refresh affirmations for new category
+    refreshAffirmations();
+  }, [category, cancel, refreshAffirmations]);
+
   const progress = ((MEDITATION_CONFIG.DURATION - timeLeft) / MEDITATION_CONFIG.DURATION) * 100;
 
   useEffect(() => {

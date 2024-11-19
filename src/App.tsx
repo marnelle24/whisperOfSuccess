@@ -8,12 +8,17 @@ function App() {
     category: 'Relationship',
   });
 
+  const [key, setKey] = useState(0); // Add this to force re-render of MeditationPlayer
+
   const handleConfigChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = e.target;
     setConfig(prevConfig => ({
       ...prevConfig,
       [name]: value
     }));
+    if (name === 'category') {
+      setKey(prev => prev + 1); // Force re-render when category changes
+    }
   };
 
   return (
@@ -50,7 +55,7 @@ function App() {
       <br />
       <br />
       <br />
-      <MeditationPlayer category={config.category} />
+      <MeditationPlayer category={config.category} key={key} />
     </div>
   );
 }
