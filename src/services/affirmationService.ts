@@ -1,10 +1,9 @@
 import { supabase } from '../lib/supabase';
 import { Affirmation } from '../types/affirmation';
-import { MEDITATION_CONFIG } from '../config/constants';
 import { AFFIRMATIONS_POOL } from '../data/affirmations';
 
-export const fetchAffirmations = async (selectedCategory: string): Promise<Affirmation[]> => {
-  const timeInterval = Math.floor(MEDITATION_CONFIG.DURATION / 10);
+export const fetchAffirmations = async ({ selectedCategory, duration }: { selectedCategory: string, duration: number }): Promise<Affirmation[]> => {
+  const timeInterval = Math.floor(duration / 10);
   const category = selectedCategory; // filter here
   try {
     const { data, error } = await supabase
@@ -12,6 +11,21 @@ export const fetchAffirmations = async (selectedCategory: string): Promise<Affir
       .select('*')
       .eq('category', category)
       .limit(10);
+    
+    // if (data && data.length < 10) {
+    //   const randomAffirmations = data.slice(0, 10 - data.length);
+    //   data.push(...randomAffirmations);
+    // }
+
+    while (data && data.length < 10) {
+      const randomIndex = Math.floor(Math.random() * AFFIRMATIONS_POOL.length);
+      const randomAffirmation = AFFIRMATIONS_POOL[randomIndex];
+      data.push({
+        id: data.length + 1,
+        text: randomAffirmation,
+        category: 'default'
+      });
+    }
 
     if (error) {
       throw error;
@@ -21,7 +35,7 @@ export const fetchAffirmations = async (selectedCategory: string): Promise<Affir
       throw new Error('No affirmations found');
     }
 
-    const timeInterval = Math.floor(MEDITATION_CONFIG.DURATION / 10);
+    // const timeInterval = Math.floor(duration / 10);
 
     console.log(data);
 

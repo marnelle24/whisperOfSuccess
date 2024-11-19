@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Affirmation } from '../types/affirmation';
 import { fetchAffirmations } from '../services/affirmationService';
 
-export const useAffirmations = (category: string) => {
+export const useAffirmations = (category: string, duration: number) => {
   const [affirmations, setAffirmations] = useState<Affirmation[]>([]);
   const [currentAffirmation, setCurrentAffirmation] = useState<Affirmation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,7 +13,7 @@ export const useAffirmations = (category: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await fetchAffirmations(category);
+      const data = await fetchAffirmations({ selectedCategory: category, duration: duration });
       setAffirmations(data);
       setCurrentAffirmation(data[0]);
     } catch (err) {
@@ -22,7 +22,7 @@ export const useAffirmations = (category: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [category, duration]);
 
   useEffect(() => {
     refreshAffirmations();

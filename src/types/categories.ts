@@ -1,5 +1,5 @@
 export type Category = 'Personal Growth' | 'Financial' | 'Relationship' | 'Goal';
 
-export interface MeditationConfig {
+export interface CategoryConfig {
   category: Category;
 } 

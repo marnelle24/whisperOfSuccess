@@ -1,23 +1,42 @@
 import { useState } from 'react';
 import { MeditationPlayer } from './components/MeditationPlayer';
 import { CategorySelect } from './components/CategorySelect';
-import { MeditationConfig } from './types/categories';
+import { CategoryConfig } from './types/categories';
+import { DurationConfig } from './types/duration';
 
 function App() {
-  const [config, setConfig] = useState<MeditationConfig>({
+
+  // Category Config
+  const [categoryConfig, setCategoryConfig] = useState<CategoryConfig>({
     category: 'Relationship',
+  });
+
+  // Duration Config
+  const [durationConfig, setDurationConfig] = useState<DurationConfig>({
+    duration: 3,
   });
 
   const [key, setKey] = useState(0); // Add this to force re-render of MeditationPlayer
 
   const handleConfigChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = e.target;
-    setConfig(prevConfig => ({
+    setCategoryConfig(prevConfig => ({
       ...prevConfig,
       [name]: value
     }));
     if (name === 'category') {
       setKey(prev => prev + 1); // Force re-render when category changes
+    }
+  };
+
+  const handleDurationConfigChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDurationConfig(prevConfig => ({
+      ...prevConfig,
+      [name]: value
+    }));
+    if (name === 'duration') {
+      setKey(prev => prev + 1); // Force re-render when duration changes
     }
   };
 
@@ -31,7 +50,7 @@ function App() {
         <div className="space-y-4">
           <div className="flex gap-4">
             <CategorySelect
-              value={config.category}
+              value={categoryConfig.category}
               onChange={handleConfigChange}
             />
             <div className="w-1/3">
@@ -39,9 +58,10 @@ function App() {
               <input
                 type="number"
                 name="duration"
-                value={config.category}
-                onChange={handleConfigChange}
-                min="1"
+                value={durationConfig.duration}
+                onChange={handleDurationConfigChange}
+                min="3"
+                max="10"
                 className="w-full p-2 border rounded-md"
               />
             </div>
@@ -55,7 +75,7 @@ function App() {
       <br />
       <br />
       <br />
-      <MeditationPlayer category={config.category} key={key} />
+      <MeditationPlayer category={categoryConfig.category} duration={durationConfig.duration * 60} key={key} />
     </div>
   );
 }

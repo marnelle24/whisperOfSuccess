@@ -1,19 +1,21 @@
 import React from 'react';
 
 interface CircularProgressProps {
-  progress: number;
+  currentTime: number;
+  duration: number;
   size?: number;
   strokeWidth?: number;
 }
 
 export const CircularProgress: React.FC<CircularProgressProps> = ({
-  progress,
+  currentTime,
+  duration,
   size = 300,
   strokeWidth = 15,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const strokeDashoffset = circumference - (currentTime / duration) * circumference;
 
   return (
     <div className="relative" style={{ width: size, height: size }}>

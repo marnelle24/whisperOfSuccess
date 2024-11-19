@@ -2,17 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { FaPlay, FaPause, FaRedo } from 'react-icons/fa';
 import { AudioPlayer } from './AudioPlayer';
 import { CircularProgress } from './CircularProgress';
-import { MEDITATION_CONFIG } from '../config/constants';
+// import { MEDITATION_CONFIG } from '../config/constants';
 import { useSpeech } from '../hooks/useSpeech';
 import { useAffirmations } from '../hooks/useAffirmations';
+import { Timer } from './Timer';
 
 interface MeditationPlayerProps {
-  category: string;
+  category: string,
+  duration: number;
 }
 
-export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) => {
+export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category, duration }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<number>(MEDITATION_CONFIG.DURATION);
+
+  const [timeLeft, setTimeLeft] = useState<number>(duration);
+
   // const [currentIndex, setCurrentIndex] = useState(0);
   const { speak, cancel } = useSpeech();
   const { 
@@ -22,7 +26,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
     isLoading,
     error,
     refreshAffirmations
-  } = useAffirmations(category);
+  } = useAffirmations(category, duration);
 
   // Add this effect to handle category changes
   useEffect(() => {
@@ -32,12 +36,11 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
       cancel();
     }
     // Reset timer
-    setTimeLeft(MEDITATION_CONFIG.DURATION);
+    setTimeLeft(duration);
     // Refresh affirmations for new category
     refreshAffirmations();
-  }, [category, cancel, refreshAffirmations]);
+  }, [category, cancel, refreshAffirmations, duration]);
 
-  const progress = ((MEDITATION_CONFIG.DURATION - timeLeft) / MEDITATION_CONFIG.DURATION) * 100;
 
   useEffect(() => {
     let timer: number;
@@ -47,7 +50,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
         setTimeLeft((prev) => prev - 1);
       }, 1000);
 
-      const elapsedTime = MEDITATION_CONFIG.DURATION - timeLeft;
+      const elapsedTime = duration - timeLeft;
       const nextAffirmation = affirmations.find(
         (aff) => aff.timing === elapsedTime
       );
@@ -67,12 +70,12 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
     return () => {
       clearInterval(timer);
     };
-  }, [isPlaying, timeLeft, speak, cancel, affirmations, setCurrentAffirmation]);
+  }, [isPlaying, timeLeft, speak, cancel, affirmations, setCurrentAffirmation, duration]);
 
   const togglePlay = () => {
     if (!isPlaying) {
       if (timeLeft === 0) {
-        setTimeLeft(MEDITATION_CONFIG.DURATION);
+        setTimeLeft(duration);
         // setCurrentIndex(0);
       }
       setIsPlaying(true);
@@ -87,7 +90,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
       setIsPlaying(false);
       cancel();
     }
-    setTimeLeft(MEDITATION_CONFIG.DURATION);
+    setTimeLeft(duration);
     // setCurrentIndex(0);
     await refreshAffirmations();
   };
@@ -113,7 +116,10 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
       <div className="relative flex items-center justify-center">
         <div className="absolute bg-white/50 backdrop-blur-sm rounded-full w-[320px] h-[320px]" />
         <div className="absolute">
-          <CircularProgress progress={progress} />
+          <CircularProgress
+            currentTime={timeLeft}
+            duration={duration}
+          />
         </div>
         <div className="relative z-10 text-center min-h-[80px] p-4 rounded-lg w-[250px]">
           <p className="text-lg text-gray-800 font-medium italic">
@@ -141,6 +147,8 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category }) 
           </button>
         </div>
       </div>
+      <br />
+      <Timer timeLeft={timeLeft} />
 
       <AudioPlayer isPlaying={isPlaying} />
     </div>
