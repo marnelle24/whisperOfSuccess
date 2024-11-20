@@ -30,6 +30,8 @@ export const fetchAffirmations = async ({ selectedCategory, duration }: { select
       throw new Error('No affirmations found');
     }
 
+    // const timeInterval = Math.floor(duration / 10);
+
     console.log(data);
 
     return data.map((aff, index) => ({
