@@ -36,7 +36,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying }) => {
     }
   };
 
-  const onError = (error: { target: YT.Player }) => {
+  const onError = (error: { target: YT.Player } ) => {
     console.error('YouTube player error:', error);
   };
 

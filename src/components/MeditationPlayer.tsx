@@ -2,45 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { FaPlay, FaPause, FaRedo } from 'react-icons/fa';
 import { AudioPlayer } from './AudioPlayer';
 import { CircularProgress } from './CircularProgress';
-import { useSpeech } from '../hooks/useSpeech';
+import { useElevenLabsVoice } from '../hooks/useElevenLabsVoice';
 import { useAffirmations } from '../hooks/useAffirmations';
 import { Timer } from './Timer';
 
 interface MeditationPlayerProps {
-  category: string,
+  category: string;
   duration: number;
 }
 
 export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category, duration }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-
   const [timeLeft, setTimeLeft] = useState<number>(duration);
+  const [isMusicReady, setIsMusicReady] = useState(false);
 
-  // const [currentIndex, setCurrentIndex] = useState(0);
-  const { speak, cancel } = useSpeech();
+
+  const { speak, stop, isLoading: isVoiceLoading } = useElevenLabsVoice();
+  
   const { 
     affirmations, 
     currentAffirmation, 
     setCurrentAffirmation,
-    isLoading,
+    isLoading: isAffirmationsLoading,
     error,
     refreshAffirmations
   } = useAffirmations(category, duration);
 
-  // Add this effect to handle category changes
+  // Handle category changes
   useEffect(() => {
-    // Stop playing if active
     if (isPlaying) {
       setIsPlaying(false);
-      cancel();
+      stop();
     }
-    // Reset timer
     setTimeLeft(duration);
-    // Refresh affirmations for new category
     refreshAffirmations();
-  }, [category, cancel, refreshAffirmations, duration]);
+  }, [category, stop, refreshAffirmations, duration]);
 
-
+  // Handle meditation timer and affirmations
   useEffect(() => {
     let timer: number;
 
@@ -57,99 +55,94 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category, du
       if (nextAffirmation) {
         setCurrentAffirmation(nextAffirmation);
         speak(nextAffirmation.text);
-        // setCurrentIndex((prev) => (prev + 1) % affirmations.length);
       }
     }
 
     if (timeLeft === 0) {
       setIsPlaying(false);
-      cancel();
+      stop();
     }
 
     return () => {
       clearInterval(timer);
     };
-  }, [isPlaying, timeLeft, speak, cancel, affirmations, setCurrentAffirmation, duration]);
+  }, [isPlaying, timeLeft, speak, stop, affirmations, setCurrentAffirmation, duration]);
 
   const togglePlay = () => {
     if (!isPlaying) {
       if (timeLeft === 0) {
         setTimeLeft(duration);
-        // setCurrentIndex(0);
+        refreshAffirmations();
       }
-      setIsPlaying(true);
     } else {
-      setIsPlaying(false);
-      cancel();
+      stop();
     }
+    setIsPlaying(!isPlaying);
   };
 
-  const handleRefresh = async () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      cancel();
-    }
+  const handleReset = () => {
+    setIsPlaying(false);
+    stop();
     setTimeLeft(duration);
-    // setCurrentIndex(0);
-    await refreshAffirmations();
+    refreshAffirmations();
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const isLoading = isAffirmationsLoading || isVoiceLoading || !isMusicReady;
 
   if (error) {
-    return (
-      <div className="text-red-500 text-center">
-        {error}
-      </div>
-    );
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-8">
-      <div className="relative flex items-center justify-center">
-        <div className="absolute bg-white/50 backdrop-blur-sm rounded-full w-[320px] h-[320px]" />
-        <div className="absolute">
-          <CircularProgress
-            currentTime={timeLeft}
-            duration={duration}
-          />
-        </div>
-        <div className="relative z-10 text-center min-h-[80px] p-4 rounded-lg w-[250px]">
-          <p className="text-lg text-gray-800 font-medium italic">
-            {currentAffirmation?.text || "Press play to start your meditation journey"}
-          </p>
-        </div>
-      </div>
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className="flex flex-col items-center space-y-4">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={togglePlay}
-            className="w-16 h-16 flex items-center justify-center bg-gray-300/50 hover:bg-white/50 rounded-full text-white transition-colors duration-300 shadow-lg"
-          >
-            {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
-          </button>
-          <button
-            onClick={handleRefresh}
-            className="w-16 h-16 flex items-center justify-center bg-gray-300/50 hover:bg-white/50 rounded-full text-white transition-colors duration-300 shadow-lg"
-          >
-            <FaRedo size={20} />
-          </button>
-        </div>
-      </div>
-      <br />
-      <Timer timeLeft={timeLeft} />
+    <div className="relative flex flex-col items-center justify-center p-4">
+      <div className="relative">
+        <CircularProgress
+          currentTime={duration - timeLeft}
+          duration={duration}
+          size={500}
+          strokeWidth={15}
+        />
+        
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+          <Timer timeLeft={timeLeft} />
+          <br />  
+          
+          {currentAffirmation && (
+            <div className="mt-4 text-3xl drop-shadow-sm text-white/90 font-medium max-w-md">
+              {currentAffirmation.text}
+            </div>
+          )}
 
-      <AudioPlayer isPlaying={isPlaying} />
+          <div className="mt-20 flex gap-8 justify-center">
+            <button
+              onClick={togglePlay}
+              className="p-4 rounded-full bg-white/40 hover:bg-white/30 transition-colors text-white"
+              disabled={isVoiceLoading}
+            >
+              {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
+            </button>
+            
+            <button
+              onClick={handleReset}
+              className="p-4 rounded-full bg-white/40 hover:bg-white/30 transition-colors text-white"
+              disabled={isVoiceLoading}
+            >
+              <FaRedo size={30} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <AudioPlayer 
+        isPlaying={isPlaying} 
+        onReady={() => setIsMusicReady(true)} 
+      />
+      
+      {isVoiceLoading && (
+        <div className="absolute inset-0 left-4 text-white/70 text-sm">
+          Generating voice...
+        </div>
+      )}
     </div>
   );
 };

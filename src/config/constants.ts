@@ -1,14 +1,24 @@
-
-// Array of strings
-const youtubeIDs = ['joRVkFrxuS4', 'YRJ6xoiRcpQ', 'kYissYTEjww', 'AEoci8pjC7Y', 'vELBkxa-8EQ'];
-const randomIDs = youtubeIDs[Math.floor(Math.random() * youtubeIDs.length)];
+// Array of peaceful meditation music IDs
+const MEDITATION_MUSIC_IDS = [
+  'tNkZsRW7h2c', // Peaceful meditation music
+  '77ZF50ve6rM', // Deep meditation
+  'FjHGZj2IjBk', // Calm meditation
+  'DTJkQB5oc9o', // Relaxing meditation
+  '1ZYbU82GVz4', // Ambient meditation
+] as const;
 
 export const MEDITATION_CONFIG = {
-  // Peaceful meditation music (432Hz Miracle Tone - longer version)
-  YOUTUBE_VIDEO_ID: randomIDs,
+  // Randomly select one of the meditation tracks
+  YOUTUBE_VIDEO_ID: MEDITATION_MUSIC_IDS[Math.floor(Math.random() * MEDITATION_MUSIC_IDS.length)],
+  
   // Duration in seconds (3 minutes)
   DURATION: 180,
-  // Volume settings
-  MUSIC_VOLUME: 30,
-  VOICE_VOLUME: 50
+  
+  // Volume settings (0-100)
+  MUSIC_VOLUME: 25, // Reduced to be less intrusive
+  VOICE_VOLUME: 75,
+  
+  // Playback settings
+  LOOP: true,
+  AUTOPLAY: true,
 } as const;

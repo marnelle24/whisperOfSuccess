@@ -69,12 +69,6 @@ function App() {
         </div>
       </div>
       <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
       <MeditationPlayer category={categoryConfig.category} duration={durationConfig.duration * 60} key={key} />
     </div>
   );
