@@ -84,8 +84,11 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category, du
     setIsPlaying(false);
     stop();
     setTimeLeft(duration);
+    setCurrentAffirmation(null);
     refreshAffirmations();
   };
+
+
 
   const isLoading = isAffirmationsLoading || isVoiceLoading || !isMusicReady;
 
@@ -119,7 +122,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({ category, du
               className="p-4 rounded-full bg-white/40 hover:bg-white/30 transition-colors text-white"
               disabled={isVoiceLoading}
             >
-              {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
+              {isPlaying ? <FaPause size={30} /> : <FaPlay size={30} />}
             </button>
             
             <button
